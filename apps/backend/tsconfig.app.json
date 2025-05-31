@@ -19,5 +19,11 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
-  ]
+  ],
+  "paths": {
+    "@backend": ["src"],
+    "@backend/*": ["src/*"],
+    "@shared": ["../../shared/src"],
+    "@shared/*": ["../../shared/src/*"]
+  }
 }
