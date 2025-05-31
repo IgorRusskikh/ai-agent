@@ -12,19 +12,43 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ai-agent
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai-agent
+
     steps:
-      - name: '[1/8] Checkout repository'
+      - name: '[1/9] Checkout repository'
         uses: actions/checkout@v3
 
-      - name: '[2/8] Install Node.js v20'
+      - name: '[2/9] Install Node.js v20'
         uses: actions/setup-node@v3
         with:
           node-version: 22.16.0
 
-      - name: '[3/8] Install dependencies'
+      - name: '[3/9] Install dependencies'
         run: npm ci
 
-      - name: '[4/8] Cache Nx'
+      - name: '[4/9] Generate Prisma client'
+        run: npx nx run backend:db:generate
+
+      - name: '[5/9] Apply migrations'
+        run: npx nx run backend:db:migrate
+
+      - name: '[6/9] Cache Nx'
         uses: actions/cache@v3
         with:
           path: node_modules/.cache/nx
@@ -32,14 +56,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nx-
 
-      - name: '[5/8] Check types'
+      - name: '[7/9] Check types'
         run: npx tsc --noEmit
 
-      - name: '[6/8] Lint'
+      - name: '[8/9] Lint'
         run: npx nx affected --target=lint --parallel=3
 
-      - name: '[7/8] Unit tests'
+      - name: '[9/9] Unit tests'
         run: npx nx affected --target=test --parallel=3
 
-      - name: '[8/8] Build'
+      - name: '[10/9] Build'
         run: npx nx affected --target=build --parallel=3
