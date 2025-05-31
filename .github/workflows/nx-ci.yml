@@ -31,7 +31,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai-agent
 
     steps:
-      - name: '[1/9] Checkout repository'
+      - name: '[1/10] Checkout repository'
         uses: actions/checkout@v3
 
       - name: '[2/10] Install Node.js v22'
@@ -65,5 +65,8 @@ jobs:
       - name: '[9/10] Unit tests'
         run: npx nx affected --target=test --parallel=3
 
-      - name: '[10/10] Build'
-        run: npx nx affected --target=build --parallel=3
+      - name: '[10/10] Build with Docker'
+        run: |
+          cd apps/backend
+          docker build -t ai-agent-backend:latest -f Dockerfile ../../
+          echo "✅ Docker build successful!"
