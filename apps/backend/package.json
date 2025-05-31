@@ -21,6 +21,28 @@
         }
       },
       "serve": {
+        "executor": "nx:run-commands",
+        "defaultConfiguration": "development",
+        "options": {
+          "command": "bash docker-start.sh",
+          "cwd": "apps/backend"
+        },
+        "configurations": {
+          "development": {
+            "command": "bash docker-dev-start.sh",
+            "cwd": "apps/backend"
+          },
+          "production": {
+            "command": "docker-compose -f apps/backend/docker-compose.yml up --build -d",
+            "cwd": "."
+          },
+          "docker-dev": {
+            "command": "docker-compose -f apps/backend/docker-compose.dev.yml up --build",
+            "cwd": "."
+          }
+        }
+      },
+      "serve-local": {
         "continuous": true,
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
@@ -38,6 +60,27 @@
           "production": {
             "buildTarget": "@ai-agent/backend:build:production"
           }
+        }
+      },
+      "serve-dev": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "nodemon --config nodemon.json",
+          "cwd": "apps/backend"
+        }
+      },
+      "docker-stop": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "docker-compose down",
+          "cwd": "apps/backend"
+        }
+      },
+      "docker-logs": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "docker-compose logs -f",
+          "cwd": "apps/backend"
         }
       },
       "db-migrate": {

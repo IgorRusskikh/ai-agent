@@ -1,0 +1,30 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Установка зависимостей
+COPY package*.json ./
+COPY apps/backend/package*.json ./apps/backend/
+
+# Устанавливаем все зависимости включая dev
+RUN npm ci
+
+# Копирование исходного кода
+COPY . .
+
+# Генерация Prisma клиента
+RUN npx nx run @ai-agent/backend:db-generate
+
+# Создание пользователя (убираем для разработки, чтобы избежать проблем с правами)
+# RUN addgroup -g 1001 -S nodejs
+# RUN adduser -S nestjs -u 1001
+# RUN chown -R nestjs:nodejs /app
+# USER nestjs
+
+EXPOSE 3000
+EXPOSE 9229
+
+WORKDIR /app
+
+# Используем nodemon для автоматического перезапуска при изменениях
+CMD ["npx", "nodemon", "--config", "apps/backend/nodemon.json"] 

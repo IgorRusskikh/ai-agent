@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE_NAME:-ai-agent}
+      POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network_dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USERNAME:-postgres}']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build:
+      context: ../../
+      dockerfile: apps/backend/Dockerfile.dev
+    container_name: ai_agent_backend_dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DATABASE_NAME:-ai-agent}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - '3000:3000'
+      - '9229:9229' # Debug port
+    volumes:
+      - ../../:/app
+      - /app/node_modules
+      - /app/apps/backend/node_modules
+      - ../../apps/backend/src:/app/apps/backend/src:cached
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app_network_dev
+    platform: linux/amd64
+
+volumes:
+  postgres_data_dev:
+    driver: local
+
+networks:
+  app_network_dev:
+    driver: bridge
