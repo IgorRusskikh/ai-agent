@@ -7,3 +7,57 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  phone        String  @unique
+  name         String?
+  avatarUrl    String? @map("avatar_url")
+  passwordHash String? @map("password_hash")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  role   SystemRole @default(USER)
+  status UserStatus @default(ACTIVE)
+
+  sessions Session[] @relation("UserSessions")
+
+  @@index([email, phone])
+  @@map("users")
+}
+
+model Session {
+  id        String      @id @default(cuid())
+  userId    String      @map("user_id")
+  tokenHash String      @map("token_hash")
+  expiresAt DateTime    @map("expires_at")
+  ip        String?     @map("ip")
+  userAgent String?     @map("user_agent")
+  revokedAt DateTime?   @map("revoked_at")
+  type      SessionType @default(WEB) @map("type")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation("UserSessions", fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+enum SystemRole {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum SessionType {
+  WEB
+  MOBILE
+}
