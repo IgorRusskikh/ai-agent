@@ -43,7 +43,8 @@
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
-      }
+      },
+      "exclude": ["**/prisma/generated/**/*"]
     },
     {
       "plugin": "@nx/jest/plugin",
@@ -71,5 +72,6 @@
     "test": {
       "dependsOn": ["^build"]
     }
-  }
+  },
+  "nxCloudId": "683a94f1984f720e81d5685a"
 }

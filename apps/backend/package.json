@@ -40,14 +40,14 @@
           }
         }
       },
-      "db:migrate": {
+      "db-migrate": {
         "executor": "nx:run-commands",
         "options": {
           "command": "prisma migrate deploy",
           "cwd": "apps/backend"
         }
       },
-      "db:generate": {
+      "db-generate": {
         "executor": "nx:run-commands",
         "options": {
           "command": "prisma generate",

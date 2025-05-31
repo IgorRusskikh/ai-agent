@@ -43,10 +43,10 @@ jobs:
         run: npm ci
 
       - name: '[4/9] Generate Prisma client'
-        run: npx nx run backend:db:generate
+        run: npx nx run backend:db-generate
 
       - name: '[5/9] Apply migrations'
-        run: npx nx run backend:db:migrate
+        run: npx nx run backend:db-migrate
 
       - name: '[6/9] Cache Nx'
         uses: actions/cache@v3
