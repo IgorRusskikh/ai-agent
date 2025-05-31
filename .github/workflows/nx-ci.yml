@@ -34,21 +34,21 @@ jobs:
       - name: '[1/9] Checkout repository'
         uses: actions/checkout@v3
 
-      - name: '[2/9] Install Node.js v20'
+      - name: '[2/10] Install Node.js v22'
         uses: actions/setup-node@v3
         with:
           node-version: 22.16.0
 
-      - name: '[3/9] Install dependencies'
+      - name: '[3/10] Install dependencies'
         run: npm ci
 
-      - name: '[4/9] Generate Prisma client'
+      - name: '[4/10] Generate Prisma client'
         run: npx nx run backend:db-generate
 
-      - name: '[5/9] Apply migrations'
+      - name: '[5/10] Apply migrations'
         run: npx nx run backend:db-migrate
 
-      - name: '[6/9] Cache Nx'
+      - name: '[6/10] Cache Nx'
         uses: actions/cache@v3
         with:
           path: node_modules/.cache/nx
@@ -56,14 +56,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nx-
 
-      - name: '[7/9] Check types'
+      - name: '[7/10] Check types'
         run: npx tsc --noEmit
 
-      - name: '[8/9] Lint'
+      - name: '[8/10] Lint'
         run: npx nx affected --target=lint --parallel=3
 
-      - name: '[9/9] Unit tests'
+      - name: '[9/10] Unit tests'
         run: npx nx affected --target=test --parallel=3
 
-      - name: '[10/9] Build'
+      - name: '[10/10] Build'
         run: npx nx affected --target=build --parallel=3
