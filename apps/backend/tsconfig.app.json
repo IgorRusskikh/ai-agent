@@ -1,13 +1,27 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": ["es2022"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2021",
     "outDir": "dist",
     "types": ["node"],
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*.ts"],
   "exclude": [
